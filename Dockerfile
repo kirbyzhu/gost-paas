@@ -1,14 +1,12 @@
-FROM debian:oldstable-slim
-MAINTAINER mixool0204@gmail.com
+FROM debian:alpine:latest
 
-RUN apt-get update \
-    && apt-get install -y wget \
-    && wget --no-check-certificate https://github.com/ginuerzh/gost/releases/download/v2.4-dev/gost_2.4-dev20170303_linux_amd64.tar.gz \
-    && tar -xzf gost_2.4-dev20170303_linux_amd64.tar.gz \
-    && mv gost_2.4-dev20170303_linux_amd64/gost /root/ \
-    && apt-get remove wget -y \
-    && apt-get autoremove -y \
-    && apt-get clean \
-    && rm -rf gost_2.4-dev20170303_linux_amd64.tar.gz  /var/lib/apt/lists/*
+RUN apk add --no-cache --virtual=.build-dependencies go gcc git libc-dev ca-certificates \
+    && export GOPATH=/tmp/go \
+    && git clone https://github.com/ginuerzh/gost $GOPATH/src/github.com/ginuerzh/gost \
+    && cd $GOPATH/src/github.com/ginuerzh/gost/cmd/gost \
+    && go build \
+    && mv $GOPATH/src/github.com/ginuerzh/gost/cmd/gost/gost /usr/local/bin/ \
+    && apk del .build-dependencies \
+    && rm -rf /tmp
 
-ENTRYPOINT ["/root/gost"]
+ENTRYPOINT ["/usr/local/bin/gost"]
