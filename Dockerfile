@@ -1,4 +1,4 @@
-FROM debian:alpine:latest
+FROM alpine:latest
 
 RUN apk add --no-cache --virtual=.build-dependencies go gcc git libc-dev ca-certificates \
     && export GOPATH=/tmp/go \
